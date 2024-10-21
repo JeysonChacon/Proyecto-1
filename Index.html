@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slider Personalizado con Estilo CSS</title>
+
+    <!-- Incluimos los estilos de noUiSlider -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.css">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f5f7fa;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #4A4A4A;
+            margin-bottom: 20px;
+        }
+
+        #slider {
+            width: 50px; /* Ancho del slider */
+            height: 300px; /* Alto del slider */
+            margin: 20px;
+        }
+
+        .light {
+            width: 50px;
+            height: 50px;
+            background-color: #ddd;
+            border-radius: 50%;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, box-shadow 0.3s;
+            margin-top: 20px;
+        }
+
+        .light.on {
+            background-color: #ff4d4d; /* Color de la luz encendida */
+            box-shadow: 0px 4px 12px rgba(255, 77, 77, 0.7);
+        }
+
+        .value {
+            font-size: 20px;
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Estilo personalizado para el slider */
+        .noUi-target {
+            border: 2px solid #4CAF50; /* Borde del slider */
+            border-radius: 10px; /* Esquinas redondeadas */
+            background-color: #fff; /* Color de fondo */
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2); /* Sombra del slider */
+        }
+
+        .noUi-base {
+            background: #e0e0e0; /* Color base del slider */
+        }
+
+        .noUi-connect {
+            background: #4CAF50; /* Color de la barra conectada */
+        }
+
+        .noUi-handle {
+            border: 2px solid #4CAF50; /* Borde del mango */
+            background: #fff; /* Color de fondo del mango */
+            border-radius: 50%; /* Mango redondo */
+            width: 30px; /* Ancho del mango */
+            height: 30px; /* Alto del mango */
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3); /* Sombra del mango */
+        }
+
+        .noUi-handle:before {
+            content: ''; /* Para evitar que aparezca el tooltip por defecto */
+        }
+
+        .noUi-tooltip {
+            background: #4CAF50; /* Color del tooltip */
+            color: white; /* Color del texto del tooltip */
+            border-radius: 5px; /* Esquinas redondeadas */
+            padding: 5px; /* Espaciado */
+            font-size: 14px; /* Tamaño del texto */
+        }
+
+        /* Estilos para botones y entrada */
+        .controls {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 0 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            margin-left: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Slider Personalizado con Estilo CSS</h1>
+    
+    <div id="slider"></div>
+    <!-- Indicador de luz -->
+    <div class="light" id="light"></div>
+    <!-- Mostrar el valor actual -->
+    <div class="value">Valor: <span id="sliderValue">1</span></div>
+
+    <div class="controls">
+        <button id="decrease">Disminuir</button>
+        <button id="increase">Aumentar</button>
+        <input type="number" id="inputValue" min="1" max="100" value="1" />
+    </div>
+
+    <!-- Incluimos el script de noUiSlider -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.0/nouislider.min.js"></script>
+
+    <script>
+        var slider = document.getElementById('slider');
+        var light = document.getElementById('light');
+        var sliderValue = document.getElementById('sliderValue');
+        var inputValue = document.getElementById('inputValue');
+
+        // Crear el slider con noUiSlider
+        noUiSlider.create(slider, {
+            start: [1], // Valor inicial
+            range: {
+                'min': 1,
+                'max': 100
+            },
+            orientation: 'vertical', // Hacemos que el slider sea vertical
+            direction: 'rtl', // Deslizar de abajo hacia arriba
+            tooltips: true, // Mostrar el valor actual en un tooltip
+            step: 1, // Mover de 1 en 1
+            connect: [true, false] // Conectar el primer rango con el valor
+        });
+
+        // Mostrar el valor actual del slider
+        slider.noUiSlider.on('update', function (values, handle) {
+            var value = Math.round(values[handle]); // Redondeamos el valor
+            sliderValue.innerHTML = value;
+            inputValue.value = value; // Sincroniza el valor con el input
+
+            // Encender la luz si el valor es mayor que 50
+            if (value > 50) {
+                light.classList.add("on");
+            } else {
+                light.classList.remove("on");
+            }
+        });
+
+        // Función para actualizar el slider desde el input
+        inputValue.addEventListener('input', function() {
+            var value = parseInt(inputValue.value);
+            if (value >= 1 && value <= 100) {
+                slider.noUiSlider.set(value); // Actualiza el slider
+            }
+        });
+
+        // Botones para aumentar y disminuir el valor
+        document.getElementById('increase').addEventListener('click', function() {
+            var currentValue = parseInt(sliderValue.innerHTML);
+            if (currentValue < 100) {
+                slider.noUiSlider.set(currentValue + 1); // Aumenta el valor
+            }
+        });
+
+        document.getElementById('decrease').addEventListener('click', function() {
+            var currentValue = parseInt(sliderValue.innerHTML);
+            if (currentValue > 1) {
+                slider.noUiSlider.set(currentValue - 1); // Disminuye el valor
+            }
+        });
+    </script>
+</body>
+</html>
